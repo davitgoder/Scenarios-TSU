@@ -1,0 +1,189 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Helper;
+
+
+public class PlayerMotor : MonoBehaviour {
+
+    #region Public Fields & Properties 
+
+    public float walkSpeed = 3f;
+    public float runSpeed = 5f;
+    public float sprintSpeed = 7f;
+    public float _rotationSpeed = 140f;
+    public float jumsHight = 10f;
+    public float garvity = 20;
+
+
+    #endregion
+
+    #region Private Fields & Properties
+
+    private float _horizontal =0f;
+    private float _vertical = 0f;
+    private float _moveSpeed;
+    private float _airVelocity = 0f;
+
+    private Transform _myXfrom;
+    private Vector3 _movementDirection = Vector3.zero;
+    private CharacterController _controller;
+    private Animator _animator;
+    private SpeedState _speedState = SpeedState.Run;
+    private CameraState _cameraState;
+    private PlayerCharacter _pc;
+    private PlayerCamera _camera;
+
+    #endregion
+
+    #region Getters & Setters
+
+
+    public float MoveSpeed
+    {
+        get { return _moveSpeed; }
+
+        set { _moveSpeed = value; }
+
+    }
+
+    #endregion
+
+
+    #region System Methods
+
+
+
+    void Start ()
+    {
+		if(GetComponent<NetworkView>().isMine || Network.peerType == NetworkPeerType.Disconnected)
+        {
+            _myXfrom = this.GetComponent<Transform>();
+            _pc = this.GetComponent<PlayerCharacter>();
+            _camera = this.GetComponent<PlayerCamera>();
+
+            _animator = _pc.Animator;
+            _controller = _pc.Controller;
+
+            _animator.SetBool(AnimatorConditions.Grounded, true);
+
+        }
+        else
+        {
+            enabled = false;
+
+        }
+
+    }
+  
+
+
+    void Update ()
+    {
+
+        _cameraState = _camera.cameraState;
+
+        CalculateSpeed();
+        _animator.SetFloat(AnimatorConditions.AirVelocity, _airVelocity);
+
+
+        switch (_cameraState)
+        {
+
+            case CameraState.Normal:
+
+                if(Input.GetAxis(PlayerInput.RightX)> 0.1f || Input.GetAxis(PlayerInput.RightX) < - 0.1f)
+                {
+                    _myXfrom.Rotate(0f, Input.GetAxis(PlayerInput.RightX) * _rotationSpeed * Time.deltaTime, 0f);
+
+                }
+
+                if(_controller.isGrounded == true)
+                {
+
+                    _movementDirection = Vector3.zero;
+                    _airVelocity = 0f;
+
+                    _animator.SetBool(AnimatorConditions.Grounded, true);
+
+
+                    // shenatani ws da ad
+                    _horizontal = Input.GetAxis(PlayerInput.Horizontal);
+                    _vertical = Input.GetAxis(PlayerInput.Vertical);
+                    // animatoristvis
+
+                    _animator.SetFloat(AnimatorConditions.Direction, _horizontal);
+                    _animator.SetFloat(AnimatorConditions.Speed, _vertical);
+
+
+
+                    if (Input.GetButtonDown(PlayerInput.Jump))
+                    {
+
+                        Jump();
+
+                    }
+                    else
+                    {
+                        _movementDirection.x = Input.GetAxis(PlayerInput.Horizontal) * _moveSpeed;
+                        _movementDirection.z = Input.GetAxis(PlayerInput.Vertical) * _moveSpeed;
+                        _movementDirection = _myXfrom.TransformDirection(_movementDirection);
+                        _animator.SetBool(AnimatorConditions.Grounded, false);
+
+                    }
+
+                }
+                break;
+
+               
+
+            case CameraState.Target:
+                break;
+
+        }
+
+
+	}
+
+    #endregion
+
+    #region Custom Methods
+
+    private void CalculateSpeed()
+    {
+        switch (_speedState)
+        {
+
+
+            case SpeedState.Walk:
+                _moveSpeed = walkSpeed;
+                break;
+
+           case SpeedState.Run:
+                _moveSpeed = runSpeed;
+                break;
+
+
+            case SpeedState.Sprint:
+                _moveSpeed = sprintSpeed;
+                break;
+
+
+
+
+        }
+
+    }
+
+    private void Jump()
+    {
+        _movementDirection.y = jumsHight;
+        _airVelocity -= Time.time;
+
+
+    }
+
+    #endregion
+
+
+}

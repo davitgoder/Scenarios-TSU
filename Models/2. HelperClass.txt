@@ -1,0 +1,102 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+using Helper;
+
+
+[RequireComponent (typeof (NetworkView))]
+[RequireComponent (typeof (CharacterController))]
+[RequireComponent(typeof(Animator))]
+
+[RequireComponent(typeof(PlayerMotor))]
+[RequireComponent(typeof(PlayerCamera))]
+
+[AddComponentMenu("APP/PlayerCharactor")]
+
+
+public class PlayerCharacter : MonoBehaviour {
+
+
+    #region public  Fileds & Properties
+
+
+    #endregion
+
+    #region Private Fields & Properties
+
+    private CharacterController _controller;
+
+    private Animator _animator;
+
+    private RuntimeAnimatorController _animationController;
+
+    #endregion
+    #region Gatters & Setters
+
+    public Animator Animator
+    {
+
+        get { return this._animator; }
+
+
+    }
+    public CharacterController Controller
+    {
+
+        get { return this._controller; }
+
+
+    }
+
+    #endregion
+
+
+
+
+    #region System Methods
+
+    private void Awake()
+    {
+
+        _animator = this.GetComponent<Animator>();
+        _controller = this.GetComponent<CharacterController>();
+
+    }
+
+
+    private void Start()
+    {
+        if (GetComponent<NetworkView>() != null)
+        {
+
+            if (GetComponent<NetworkView>().isMine || Network.peerType == NetworkPeerType.Disconnected)
+            {
+                _animationController = Resources.Load(Resource.AnimatorController) as RuntimeAnimatorController;
+                _animator.runtimeAnimatorController = _animationController;
+
+                _controller.center = new Vector3(0f, 1f, 0f);
+                _controller.height = 1.8f;
+
+            }
+            else
+            {
+                enabled = false;
+            }
+
+        }
+        else
+        {
+            Debug.Log("networkviu ra aris ");
+        }
+    }
+
+    #endregion
+
+    #region Custom Methods
+    #endregion
+
+
+
+
+}

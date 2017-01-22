@@ -1,0 +1,28 @@
+
+
+
+var texture1 : Texture2D;
+var texture2 : Texture2D;
+var texture3 : Texture2D;
+var texture4 : Texture2D;
+var texture5 : Texture2D;
+var change : boolean = true;
+function Start() {
+        changeTexture();
+}
+function Update () {
+}
+function changeTexture () {
+        while(change) {
+                yield WaitForSeconds(0.5);
+                renderer.material.mainTexture = texture1;      
+                yield WaitForSeconds(0.5);
+                renderer.material.mainTexture = texture2;
+                yield WaitForSeconds(0.5);
+                renderer.material.mainTexture = texture3;
+                yield WaitForSeconds(0.5);
+                renderer.material.mainTexture = texture4;
+                yield WaitForSeconds(0.5);
+                renderer.material.mainTexture = texture5;
+        }
+}

@@ -1,0 +1,87 @@
+
+
+using UnityEngive;
+using System.Collection;
+using System.Collections.generic;
+
+
+
+
+public class GrabAndSrop : MonoBehaviour {
+
+
+GameObject GrabbedObject;
+float size;
+
+Gameobject getMouseHoverObject (float range)
+{
+
+Vector3 position = gameobject.transform.position;
+RaycastHit raycastHit;
+Vector3 target = position + Camera.main.trasform.forward* range;
+
+if(Physics.Linecast(position, target, out raycatsHit))
+return yarcast  Hit.collider.gameobject;
+
+
+return null;
+
+}
+
+
+void grab_O(GameObject g)
+{
+
+if(g==null || !CanGrab(g))
+return;
+
+GrabbedObject =g;
+size=g.renderer.bound.size.magnitude;
+
+}
+
+bool CanGrab( GameObject candidate)
+{
+ return candidate.Getconponent<Rigidbody() != null;
+
+}
+
+
+void drop()
+{
+if(g==null)
+return;
+
+if(grabbedobject.Getcomponent<Rigidbody>() != null)
+grabbedObject.getcomponent<Rigidbody>().velocity= Vector3.zero;
+
+
+GrabbedObject=null;
+
+
+
+}
+
+void Update () {
+
+// Debug.Log(get_object(5));
+
+if(Input.GetMouseButtonDown(1))
+{
+if(grabbedObject==null)
+
+grab_O(GetMouseHoverObject(5))
+
+else 
+DropObject();
+
+if(grabbedObject !=null)
+{
+Vector3 newPosition =  gameobject.transform.postion +Camera.main.tarnsform.forward*size;
+garbbed_O
+
+}
+}
+
+
+}
